@@ -1,0 +1,11 @@
+<app-data-table
+  [columns]="columns"
+  [data]="unidades"
+  (create)="onCreate()"
+  (edit)="onEdit($event)"
+  (delete)="onDelete($event)">
+
+  <span header>Unidades</span>
+  <span footer>Footer</span>
+
+</app-data-table>

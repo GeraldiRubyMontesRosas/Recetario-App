@@ -1,0 +1,58 @@
+<div class="table-container">
+
+  <div class="header">
+    <ng-content select="[header]"></ng-content>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn-create" (click)="create.emit()">
+      Crear
+    </button>
+
+    <input
+      type="text"
+      placeholder="Buscar..."
+      [ngModel]="searchText()"
+      (ngModelChange)="onSearchChange($event)">
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th *ngFor="let col of columns">{{ col.header }}</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let item of paginatedData()">
+        <td *ngFor="let col of columns">
+          <img *ngIf="col.type === 'image'" [src]="item[col.field]" width="60" alt="">
+          <span *ngIf="col.type !== 'image'">{{ item[col.field] }}</span>
+        </td>
+
+        <td class="actions">
+          <button (click)="edit.emit(item)">Editar</button>
+          <button (click)="delete.emit(item)">Eliminar</button>
+        </td>
+      </tr>
+
+      <tr *ngIf="paginatedData().length === 0">
+        <td [attr.colspan]="columns.length + 1" class="empty">
+          No hay resultados
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <ng-content select="[footer]"></ng-content>
+
+    <div class="pagination">
+      <button (click)="prevPage()" [disabled]="currentPage() === 1">‹</button>
+      <span>{{ currentPage() }} de {{ totalPages() }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage() === totalPages()">›</button>
+    </div>
+  </div>
+
+</div>
