@@ -8,7 +8,7 @@ export const routes: Routes = [
     component: CrearRecetaComponent
   },
   {
-    path: 'recetas/unidades',
+    path: 'unidades',
     component: UnidadComponent
   }
 ];

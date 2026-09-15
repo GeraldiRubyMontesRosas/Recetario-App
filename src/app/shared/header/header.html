@@ -1,0 +1,33 @@
+<header class="header">
+  <ul class="nav-desktop">
+    <li><a href="#">Explorar</a></li>
+    <li><a href="#">Categorías</a></li>
+    <li><a href="#">Mis recetas</a></li>
+  </ul>
+
+  <a href="#" class="logo">
+    <span class="logo-marca">🍓</span>
+    <span class="logo-texto">Saborea</span>
+  </a>
+
+  <div class="cuenta">
+    <button class="btn-guardar nav-desktop-extra">Nueva receta</button>
+    <button
+      class="hamburguesa"
+      [class.activo]="menuAbierto"
+      (click)="alternarMenu()"
+      [attr.aria-expanded]="menuAbierto"
+      [attr.aria-label]="menuAbierto ? 'Cerrar menú' : 'Abrir menú'"
+    >
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <nav class="nav-movil" [class.abierto]="menuAbierto">
+    <a href="#" (click)="cerrarMenu()">Explorar</a>
+    <a href="#" (click)="cerrarMenu()">Categorías</a>
+    <a href="#" (click)="cerrarMenu()">Mis recetas</a>
+    <a href="#" (click)="cerrarMenu()">Favoritos</a>
+    <button class="btn-guardar" (click)="cerrarMenu()">Nueva receta</button>
+  </nav>
+</header>

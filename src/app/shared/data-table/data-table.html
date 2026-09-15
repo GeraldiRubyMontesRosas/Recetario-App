@@ -1,22 +1,26 @@
-<div class="table-container">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Tabla reutilizable — preview de estilos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="table-container">
 
   <div class="header">
     <ng-content select="[header]"></ng-content>
   </div>
 
-  <div class="toolbar">
-    <button class="btn-create" (click)="create.emit()">
-      Crear
-    </button>
+    <div class="toolbar">
+      <button class="btn-create">Crear</button>
+      <input type="text" placeholder="Buscar...">
+    </div>
 
-    <input
-      type="text"
-      placeholder="Buscar..."
-      [ngModel]="searchText()"
-      (ngModelChange)="onSearchChange($event)">
-  </div>
-
-  <table>
+      <table>
     <thead>
       <tr>
         <th *ngFor="let col of columns">{{ col.header }}</th>
@@ -32,8 +36,8 @@
         </td>
 
         <td class="actions">
-          <button (click)="edit.emit(item)">Editar</button>
-          <button (click)="delete.emit(item)">Eliminar</button>
+          <button (click)="edit.emit(item)"><i class="fa-solid fa-pen"></i></button>
+          <button (click)="delete.emit(item)"><i class="fa-solid fa-trash"></i></button>
         </td>
       </tr>
 
@@ -45,14 +49,17 @@
     </tbody>
   </table>
 
-  <div class="footer">
-    <ng-content select="[footer]"></ng-content>
-
-    <div class="pagination">
-      <button (click)="prevPage()" [disabled]="currentPage() === 1">‹</button>
-      <span>{{ currentPage() }} de {{ totalPages() }}</span>
-      <button (click)="nextPage()" [disabled]="currentPage() === totalPages()">›</button>
+    <div class="footer">
+      <div style="font-size:0.8rem; color: var(--ink-soft);">3 resultados</div>
+        <div class="pagination">
+          <button (click)="prevPage()" [disabled]="currentPage() === 1">‹</button>
+          <span>{{ currentPage() }} de {{ totalPages() }}</span>
+          <button (click)="nextPage()" [disabled]="currentPage() === totalPages()">›</button>
+        </div>
     </div>
+
   </div>
 
-</div>
+</body>
+</html>
+

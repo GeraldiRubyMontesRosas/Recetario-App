@@ -1,6 +1,7 @@
 <app-data-table
+  ngSkipHydration
   [columns]="columns"
-  [data]="unidades"
+  [data]="unidades()"
   (create)="onCreate()"
   (edit)="onEdit($event)"
   (delete)="onDelete($event)">

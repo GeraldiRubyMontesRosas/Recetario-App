@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, computed, signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, computed, effect, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ColumnaTabla } from '../../models/columna-tabla.interface';
@@ -10,25 +10,34 @@ import { ColumnaTabla } from '../../models/columna-tabla.interface';
   templateUrl: './data-table.html',
   styleUrl: './data-table.css',
 })
-export class DataTable {
+export class DataTableComponent<T extends Record<string, any> = any> {
 
-  @Input() columns: ColumnaTabla[] = [];
-  @Input() data: any[] = [];
-  @Input() pageSize = 10;
+  /** Definición de columnas: [{ header: 'Nombre', field: 'name' }, { header: 'Foto', field: 'photo', type: 'image' }] */
+  @Input({ required: true }) columns: ColumnaTabla[] = [];
+
+  /** Datos a mostrar (los que vienen de tu servicio / BD) */
+  @Input() set data(value: T[] | null | undefined) {
+    this._data.set(value ?? []);
+    this.currentPage.set(1);
+  }
+
+  /** Cuántas filas por página */
+  @Input() pageSize = 5;
 
   @Output() create = new EventEmitter<void>();
-  @Output() edit = new EventEmitter<any>();
-  @Output() delete = new EventEmitter<any>();
+  @Output() edit = new EventEmitter<T>();
+  @Output() delete = new EventEmitter<T>();
+
+  private _data = signal<T[]>([]);
 
   searchText = signal('');
   currentPage = signal(1);
 
-  // Filtra sobre todas las columnas configuradas
   filteredData = computed(() => {
-    const term = this.searchText().toLowerCase().trim();
-    if (!term) return this.data;
+    const term = this.searchText().trim().toLowerCase();
+    if (!term) return this._data();
 
-    return this.data.filter(item =>
+    return this._data().filter(item =>
       this.columns.some(col => {
         const value = item[col.field];
         return value != null && String(value).toLowerCase().includes(term);
@@ -36,31 +45,34 @@ export class DataTable {
     );
   });
 
-  totalPages = computed(() => {
-    const total = Math.ceil(this.filteredData().length / this.pageSize);
-    return total === 0 ? 1 : total;
-  });
+  totalPages = computed(() => Math.max(1, Math.ceil(this.filteredData().length / this.pageSize)));
 
   paginatedData = computed(() => {
-    const page = this.currentPage();
-    const start = (page - 1) * this.pageSize;
+    const start = (this.currentPage() - 1) * this.pageSize;
     return this.filteredData().slice(start, start + this.pageSize);
   });
 
-  onSearchChange(value: string): void {
-    this.searchText.set(value);
-    this.currentPage.set(1); // reinicia al filtrar
+  constructor() {
+    // si el filtro deja menos páginas de las que había, regresa a una página válida
+    effect(() => {
+      if (this.currentPage() > this.totalPages()) {
+        this.currentPage.set(this.totalPages());
+      }
+    });
   }
 
-  nextPage(): void {
-    if (this.currentPage() < this.totalPages()) {
-      this.currentPage.update(p => p + 1);
-    }
+  onSearchChange(value: string): void {
+    this.searchText.set(value);
+    this.currentPage.set(1);
   }
 
   prevPage(): void {
-    if (this.currentPage() > 1) {
-      this.currentPage.update(p => p - 1);
-    }
+    if (this.currentPage() > 1) this.currentPage.update(p => p - 1);
   }
+
+  nextPage(): void {
+    if (this.currentPage() < this.totalPages()) this.currentPage.update(p => p + 1);
+  }
+
+  
 }
